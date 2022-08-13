@@ -1,0 +1,27 @@
+{% extends 'pharmacy/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+{% load static %}
+
+
+
+<div class="container pt-5 pr-5">
+
+
+     <div class="fw-bold fs-3 pb-3 text-center" style="display: flex;">
+         <lottie-player src="https://assets6.lottiefiles.com/private_files/lf30_cbemdbsc.json" background="transparent" speed="1" style="height: 60px;width:60px" loop autoplay></lottie-player>
+<span style="margin-top:12px">اعدادت الحساب</span>
+            </div>
+
+    <form method="post">
+        {% csrf_token %}
+        {{settings_form | crispy}}
+        <div class="text-center pt-3">
+            <button type="submit" class="btn btn-dark">حفظ الاعدادات</button>
+        </div>
+
+    </form>
+</div>
+
+
+{% endblock %}

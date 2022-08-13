@@ -1,0 +1,122 @@
+{% extends 'pharmacy/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+{% load static %}
+
+
+<div class="container pt-5 pr-5">
+
+
+
+    <a href="http://127.0.0.1:8000/pharmacy/root/medicine/"  type="button" class="btn btn-danger mb-2" onclick="window.localStorage.clear();"><i class="fab fa-bitcoin"></i>
+        فاتورة جديدة
+    </a>
+
+
+    <table class="table">
+        <thead class="table-dark">
+        <th scope="col">الدواء</th>
+        <th scope="col">الكمية</th>
+        <th scope="col">السعر</th>
+
+        </thead>
+        <tbody id="item_list">
+
+        </tbody>
+    </table>
+
+    <div class="alert alert-dark" role="alert" id="item_total"></div>
+
+<form method="post">
+        {% csrf_token %}
+        {{payment_form | crispy}}
+        <div class="text-center pt-3">
+            <button type="submit" class="btn btn-dark" id="mark_as_done" onclick="window.localStorage.clear();"><i class="fab fa-bitcoin"></i> 
+                حفظ الفاتورة</button>
+        </div>
+
+    </form>
+
+</div>
+
+
+
+<script type="text/javascript">
+  if(localStorage.getItem('cart') == null){
+    var cart = {}
+  }
+  else{
+    var cart = JSON.parse(localStorage.getItem('cart'))
+
+  }
+
+  total = 0;
+  for (item in cart){
+    let name = cart[item][1];
+    let quantity = cart[item][0];
+    let price = cart[item][2];
+    total = total + cart[item][2];
+    // new feature using the symbol to allow the html `` it's below the Esc button
+    var itemString = `<tr><td>${name}</td><td>${quantity}</td><td>${price}</td></tr>>`;
+
+    $('#item_list').append(itemString);
+
+  }
+  totalPrice = `
+
+  الإجمالي : ${total}
+
+`;
+
+  $('#item_total').append(totalPrice);
+  $('#total').val(total)
+  $('#items').val(JSON.stringify(cart));
+
+
+
+
+
+
+
+
+
+
+
+  $('#mark_as_done').on('click', function() {
+
+var e1 = []
+var e2 = []
+
+for (var x in cart) {
+
+e1.push(x);
+e2.push(cart[x][0]);
+
+
+        }
+data = {
+    "key1": e1,
+    "key2": e2,
+    "key3": total,
+}
+
+
+$.ajax({
+    url: "/pharmacy/{{profile_user.username}}/medicine/new_payment/",
+    type: "POST",
+    headers:{
+            'content-type':'application/json',
+            'X-CSRFToken': csrftoken,
+        },
+    "data": JSON.stringify(data) //Data that we prepared previously,
+
+
+})
+
+
+});
+
+
+
+</script>
+{% endblock %}
